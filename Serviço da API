@@ -1,0 +1,27 @@
+import axios from 'axios'
+
+const GITHUB_USER = 'seu-usuario'
+const GITHUB_REPO = 'meu-github-blog'
+
+export const api = axios.create({
+  baseURL: 'https://api.github.com',
+})
+
+export async function getUserData() {
+  const response = await api.get(`/users/${GITHUB_USER}`)
+  return response.data
+}
+
+export async function getIssues(query = '') {
+  const response = await api.get(
+    `/search/issues?q=${query}%20repo:${GITHUB_USER}/${GITHUB_REPO}`
+  )
+  return response.data.items
+}
+
+export async function getIssueById(id: number) {
+  const response = await api.get(
+    `/repos/${GITHUB_USER}/${GITHUB_REPO}/issues/${id}`
+  )
+  return response.data
+}
