@@ -1,0 +1,42 @@
+import { ProfileContainer, ProfileDetails } from './styles'
+
+interface UserData {
+  name: string
+  bio: string
+  login: string
+  company?: string
+  followers: number
+  avatar_url: string
+  html_url: string
+}
+
+interface ProfileProps {
+  user?: UserData
+}
+
+export function Profile({ user }: ProfileProps) {
+  if (!user) return null
+
+  return (
+    <ProfileContainer>
+      <img src={user.avatar_url} alt="Foto de perfil" />
+
+      <ProfileDetails>
+        <header>
+          <h1>{user.name}</h1>
+          <a href={user.html_url} target="_blank">
+            VER NO GITHUB
+          </a>
+        </header>
+
+        <p>{user.bio}</p>
+
+        <ul>
+          <li>{user.login}</li>
+          {user.company && <li>{user.company}</li>}
+          <li>{user.followers} seguidores</li>
+        </ul>
+      </ProfileDetails>
+    </ProfileContainer>
+  )
+}
