@@ -1,0 +1,53 @@
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
+import { getIssueById } from '../../services/github'
+import { PostContainer, PostContent } from './styles'
+
+interface Issue {
+  title: string
+  body: string
+  created_at: string
+  comments: number
+  html_url: string
+  user: {
+    login: string
+  }
+}
+
+export function Post() {
+  const [issue, setIssue] = useState<Issue>()
+  const { id } = useParams()
+
+  useEffect(() => {
+    if (id) {
+      getIssueById(Number(id)).then(setIssue)
+    }
+  }, [id])
+
+  if (!issue) return <div>Carregando...</div>
+
+  return (
+    <PostContainer>
+      <header>
+        <h1>{issue.title}</h1>
+        
+        <div className="info">
+          <span>
+            <a href={`https://github.com/${issue.user.login}`} target="_blank">
+              {issue.user.login}
+            </a>
+          </span>
+          <span>
+            {new Date(issue.created_at).toLocaleDateString()}
+          </span>
+          <span>{issue.comments} comentários</span>
+        </div>
+      </header>
+
+      <PostContent>
+        <ReactMarkdown>{issue.body}</ReactMarkdown>
+      </PostContent>
+    </PostContainer>
+  )
+}
