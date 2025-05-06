@@ -1,0 +1,58 @@
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Profile } from '../../components/Profile'
+import { PostCard } from '../../components/PostCard'
+import { SearchForm } from '../../components/SearchForm'
+import { getUserData, getIssues } from '../../services/github'
+import { HomeContainer, PostsContainer } from './styles'
+
+interface UserData {
+  name: string
+  bio: string
+  login: string
+  company?: string
+  followers: number
+  avatar_url: string
+  html_url: string
+}
+
+interface Issue {
+  id: number
+  title: string
+  body: string
+  created_at: string
+  number: number
+}
+
+export function Home() {
+  const [user, setUser] = useState<UserData>()
+  const [issues, setIssues] = useState<Issue[]>([])
+  const { register, watch } = useForm()
+
+  const searchQuery = watch('search')
+
+  useEffect(() => {
+    getUserData().then(setUser)
+  }, [])
+
+  useEffect(() => {
+    getIssues(searchQuery).then(setIssues)
+  }, [searchQuery])
+
+  return (
+    <HomeContainer>
+      <Profile user={user} />
+      
+      <SearchForm 
+        register={register} 
+        postsCount={issues.length} 
+      />
+
+      <PostsContainer>
+        {issues.map(issue => (
+          <PostCard key={issue.id} issue={issue} />
+        ))}
+      </PostsContainer>
+    </HomeContainer>
+  )
+}
